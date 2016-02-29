@@ -1,12 +1,15 @@
 # string-alignment
+
 Implementation of local and global alignment of strings in c.
+
 Currently only global align has been succesfully implemented.
 
 Compile: 
   Get all the files in the same directory and compile with "make global-align"
   
 Run:
-  Example command: global-align vintners writers --scores=M20I-1D-1R-1 --type=max
+  Example command: 
+  	global-align vintners writers --scores=M20I-1D-1R-1 --type=max
   Example output:
       Alineamiento Global.
       Str1:   vintners
