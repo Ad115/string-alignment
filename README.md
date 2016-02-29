@@ -8,7 +8,7 @@ Currently only global align has been succesfully implemented.
   Get all the files in the same directory and compile with "make global-align"
   
  * Run:
-Example command: 
+  Example command: 
 
       global-align vintners writers --scores=M20I-1D-1R-1 --type=max
       
