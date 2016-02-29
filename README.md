@@ -4,12 +4,12 @@ Implementation of local and global alignment of strings in c.
 
 Currently only global align has been succesfully implemented.
 
-Compile: 
+ * Compile: 
   Get all the files in the same directory and compile with "make global-align"
   
-Run:
-  Example command: 
-  	global-align vintners writers --scores=M20I-1D-1R-1 --type=max
+ * Run:
+Example command: 
+      global-align vintners writers --scores=M20I-1D-1R-1 --type=max
   Example output:
       Alineamiento Global.
       Str1:   vintners
@@ -27,6 +27,6 @@ Run:
       Str2:   w r i _ t _ e r s 
       EditTr: R I M D M D M M M 
       
-  Next changes:
-  * Optimization of traceback algorithm. (Too slow, currently based on continuous resizing of array)
-  * Implement local alignments
+ * Next changes:
+  - Optimization of traceback algorithm. (Too slow, currently based on continuous resizing of array)
+  - Implement local alignments
