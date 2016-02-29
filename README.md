@@ -9,8 +9,11 @@ Currently only global align has been succesfully implemented.
   
  * Run:
 Example command: 
+
       global-align vintners writers --scores=M20I-1D-1R-1 --type=max
+      
   Example output:
+
       Alineamiento Global.
       Str1:   vintners
       Str2:   writers
