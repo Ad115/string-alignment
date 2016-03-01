@@ -71,38 +71,46 @@ La matriz resultante tiene una estructura como la que se muestra:
 Devuelve un puntero a una estructura de matriz.
  */
 {
+	int i,j;
+	int rows=strlen(str2)+1, cols=strlen(str1)+1;//Inicializa para crear la matriz
+	
 	struct a_matrix *A=(struct a_matrix *)malloc(sizeof(A));//Crea la estructura donde se aloja la matriz
 	
 	//Define las cadenas a alinear
-	A->Str1=str1; A->Str2=str2;//Almacena las cadenas en la estructura
+	(A->Str1) = (char *) malloc( cols * sizeof(char) );
+	(A->Str2) = (char *) malloc( rows * sizeof(char) );
+	strcpy((A->Str1), str1); 
+	strcpy((A->Str2), str2);//Almacena las cadenas en la estructura
 	
 	//Define el tipo de matriz
+	(A->Str2) = (char *) calloc(4, sizeof(char));
 	if(type==NULL)
-		A->Type="min";//Define la matriz por default como matriz de distancia(se llena con el mínimo de los valores posibles)
+		strcpy(A->Type, "min");//Define la matriz por default como matriz de distancia(se llena con el mínimo de los valores posibles)
 	else
-		A->Type=type;
+		strcpy(A->Type, type);
 	
 	//Define los costos de operación
+	(A->Scores)=(float *)calloc(4, sizeof(float));//Genera el arreglo de costos
 	if(scores==NULL)
 	{
-		float *Scores=(float *)calloc(4, sizeof(float));//Genera el arreglo de costos
-		Scores[0]=0, Scores[1]=1, Scores[2]=1, Scores[3]=1;//Carga los valores por default
-		A->Scores=Scores;
+		(A->Scores)[0]=0, (A->Scores)[1]=1, (A->Scores)[2]=1, (A->Scores)[3]=1;//Carga los valores por default
 	}
 	else
-		A->Scores=scores;
+	{
+		for(i=0; i<4; i++)
+			(A->Scores)[i]=scores[i]; //Carga los valores dados
+	}
 	
-	int rows=strlen(str2)+1, cols=strlen(str1)+1;//Inicializa para crear la matriz
 	//Genera la matriz en si
 	float ***M=(float ***) malloc(rows*sizeof(float **));//Genera el espacio para la matriz, en específico para los punteros a las filas
-	int i, j;
 	for(i=0; i<rows; i++)
 	{
 		M[i]=(float **) malloc(cols*sizeof(float *));//Genera espacio para las filas, M[i] es una fila
 		for(j=0; j<cols; j++)
 		{
-			M[i][j]=(float *) malloc(2*sizeof(float));//Inicializa espacio para las entradas de la matriz y el número de punteros.
+			M[i][j]=(float *) calloc(5, sizeof(float));//Inicializa espacio para las entradas de la matriz, el número de punteros y tres punteros.
 			M[i][j][1]=0;//Inicializa el número de punteros como nulo
+			M[i][j][2]=0, M[i][j][3]=0, M[i][j][4]=0;//Inicializa sin punteros
 		}
 	}
 	A->M=M;
@@ -291,13 +299,11 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 		if(i!=0)
 		{
 			N_POINTERS++;//Incrementa la cuenta de punteros
-			MATRIX[i][j]=realloc(MATRIX[i][j], (N_POINTERS+2)*sizeof(int));
 			POINTER(N_POINTERS)=VERT;//Coloca el puntero vertical
 		}
 		else if(j!=0)//Coloca el puntero correcto
 		{
 			N_POINTERS++;//Incrementa la cuenta de punteros
-			MATRIX[i][j]=realloc(MATRIX[i][j], (N_POINTERS+2)*sizeof(int));
 			POINTER(N_POINTERS)=HORI;//Coloca el puntero hacia la entrada horizontal
 		}
 	}
@@ -320,19 +326,16 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 		if(pos_dist[DIAG]==ENTRY(i,j))//Si la distancia fue dada por la entrada diagonal
 		{
 			N_POINTERS++;//Incrementa la cuenta de punteros
-			MATRIX[i][j]=realloc(MATRIX[i][j], (N_POINTERS+2)*sizeof(int));
 			POINTER(N_POINTERS)=DIAG;//Coloca el puntero diagonal
 		}
 		if(pos_dist[VERT]==ENTRY(i,j))//Si la distancia provino de la vertical
 		{
 			N_POINTERS++;//Incrementa la cuenta de punteros
-			MATRIX[i][j]=realloc(MATRIX[i][j], (N_POINTERS+2)*sizeof(int));
 			POINTER(N_POINTERS)=VERT;//Coloca el puntero vertical
 		}
 		if(pos_dist[HORI]==ENTRY(i,j))//Si la distancia provino de la entrada horizontal
 		{
 			N_POINTERS++;//Incrementa la cuenta de punteros
-			MATRIX[i][j]=realloc(MATRIX[i][j], (N_POINTERS+2)*sizeof(int));
 			POINTER(N_POINTERS)=HORI;//Coloca el puntero hacia la entrada horizontal
 		}
 	}
@@ -399,3 +402,16 @@ void FillAlignMatrix(struct a_matrix *AlignMatrix)
 #undef DEFAULT_COMPARE
 }//___________________________________________________________
 
+
+
+void FreeAlignMatrix(struct a_matrix *AlignMatrix)
+/*
+ * Libera el espacio de una estructura a_matrix previamente alojada con AllocAlignMatrix()
+ */
+{
+	free(AlignMatrix->Str1);
+	free(AlignMatrix->Str2);
+	free(AlignMatrix->Scores);
+	free(AlignMatrix->M);
+	free(AlignMatrix);
+}//___________________________________________________________
