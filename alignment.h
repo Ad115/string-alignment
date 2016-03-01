@@ -16,8 +16,11 @@
 
 	//2. Funciones para encontrar los alineamientos:
 		void GlobalAlignment(char *str1, char *str2, char *type, float *scores);//Obtiene e imprime todos los alineamientos globales óptimos de str1 y str2 con las características especificadas
-		void PathCopy(struct path *p1, struct path *p2); 
-		struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix); 
+		void PathCopy(struct path *p1, struct path *p2);
+		struct tracebacks *AllocTracebacksForMatrix(struct a_matrix *AlignMatrix);
+		struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix);
+		void AllocMorePaths(struct tracebacks *alignments, int extra_entries, int path_size);
+		void ExtendPath(struct path *Path, int extra_entries);
 		struct align_expl *ExplAlignsFromTracebacks(struct tracebacks *alignments);
 		void PrintExplAlign(struct align_expl *Align); // Muestra el alineamiento explícito Align
 		char *EditTrFromExplAlign(struct align_expl *Align); // Genera el código de edición asociado al alineamiento Align
@@ -48,25 +51,27 @@ struct align_expl
 	float Score;
 	char *Align1;
 	char *Align2;
-};
+};//___________________________________________________________
 
 
 struct tracebacks
 {
 	char *Str1;
 	char *Str2;
-	int nPaths;
-	struct path *Paths;
-};
+	int nPaths;//Número de caminos inicializados
+	int uPaths;//Número de caminos no inicializados
+	struct path *Paths;//Arreglo de caminos
+};//___________________________________________________________
 
 
 struct path
 {
-	int pSize;
-	float pScore;
+	int pSize;//Número de entradas inicializadas
+	int uSize;//Número de entradas no inicializadas
+	float pScore;//Score del camino
 	int **Path;
 
-};
+};//___________________________________________________________
 
 
 
@@ -85,12 +90,16 @@ void GlobalAlignment(char *str1, char *str2, char *type, float *scores)
 	struct a_matrix *AlignMatrix = AllocAlignMatrix(str1, str2, type, scores);//Genera espacio para la matriz
 	FillAlignMatrix(AlignMatrix);//Llena la matriz
 	//Obtén los caminos
-	struct tracebacks *tracebacks=TracebacksFromMatrix(AlignMatrix);
+	//struct tracebacks *tracebacks=TracebacksFromMatrix(AlignMatrix);
+	//Libera el espacio ocupado por la matriz
+	FreeAlignMatrix(AlignMatrix);
 	//Obtén los alineamientos globales óptimos de la matriz
-	struct align_expl *aligns=ExplAlignsFromTracebacks(tracebacks);//El arreglo de alineamientos
+	//struct align_expl *aligns=ExplAlignsFromTracebacks(tracebacks);//El arreglo de alineamientos
+	//free(tracebacks);
 	//Imprime los alineamientos
-	PrintAlignments(aligns);
-}
+	//PrintAlignments(aligns);
+	//free(aligns);
+}//___________________________________________________________
 
 
 void PathCopy(struct path *p1, struct path *p2)
@@ -98,19 +107,72 @@ void PathCopy(struct path *p1, struct path *p2)
  * Copia el camino referenciado por p1 a p2 
  */
 {
-	int size=(p1->pSize), i, j;
-	(p2->pSize)=size;//Copia el tamaño
-	float score=(p1->pScore);
-	(p2->pScore)=score;//Copia el puntaje
-	free(p2->Path);//Limpia el espacio que haya habido antes
-	(p2->Path)=(int **)calloc(size, sizeof(int *));//Genera el nuevo espacio apropiado
-	for(i=0; i<size; i++)
+	int i, j;
+	int p2size = (p2->pSize)+(p2->uSize), p1size=(p1->pSize)+(p1->uSize);
+	//Verifica si se requiere extender el camino
+	if( (p2size < p1size ) )
 	{
-		(p2->Path)[i]=(int *)calloc(3, sizeof(int));//Genera espacio para cada entrada
+		ExtendPath(p2, p1size - p2size);
+	}
+	(p2->pSize)=(p1->pSize);//Copia el tamaño
+	(p2->uSize)=(p1->uSize);
+	(p2->pScore)=(p1->pScore);//Copia el puntaje
+	for(i=0; i < (p1->pSize); i++)//Copia entrada por entrada
+	{
 		for(j=0; j<3; j++)
 			(p2->Path)[i][j]=(p1->Path)[i][j];//Coloca lo correspondiente en la entrada
 	}
 }//___________________________________________________________
+
+
+
+struct tracebacks *AllocTracebacksForMatrix(struct a_matrix *AlignMatrix)
+/*
+ * Genera espacio para una estructura tracebacks y caminos no inicializados con entradas no inicializadas.
+ * El número de caminos generados es: DEFAULT_SIZE
+ * El número de entradas generadas por camino es DEFAULT_SIZE
+ */
+#define	STR1	(alignments->Str1)
+#define	STR2	(alignments->Str2)
+#define	N_PATHS	(alignments->nPaths)
+#define	U_PATHS	(alignments->uPaths)
+#define PATHARR	(alignments->Paths)
+#define DEFAULT_SIZE	(len1+len2)
+//DEFAULT_SIZE tiene que ser la misma que en TracebacksFromMatrix!!!!
+{
+	int len1=strlen(AlignMatrix->Str1), len2=strlen(AlignMatrix->Str2);//Recupera el tamaño de las cadenas y así, el de la matriz
+	
+	//Crea espacio para la estructura y el arreglo de caminos
+	struct tracebacks *alignments=(struct tracebacks *) malloc(sizeof(alignments));//Genera espacio para la estructura
+	STR1=(char *) calloc(len1+1, sizeof(char));//Genera espacio para la cadena de texto inicial
+	strcpy(STR1, AlignMatrix->Str1);//Obtiene la cadena de texto inicial
+	STR2=(char *) calloc(len2+1, sizeof(char));//Genera espacio para la cadena de texto objetivo
+	STR2=strcpy(STR2, AlignMatrix->Str2);//Obtiene la cadena de texto objetivo
+	PATHARR = (struct path *) malloc(DEFAULT_SIZE * sizeof(struct path));//Inicializa el arreglo de caminos. Tiene DEFAULT_SIZE caminos iniciales.
+	U_PATHS = DEFAULT_SIZE;
+	N_PATHS = 0;//No hay caminos inicializados
+	
+	
+	//Crea espacio para los caminos
+	int i;
+	for(i=0; i<DEFAULT_SIZE; i++)
+	{
+		//Espacio para cada camino
+		PATHARR[i].Path = (int **) malloc(DEFAULT_SIZE * sizeof(int *));
+		int ii;
+		for(ii=0; ii < DEFAULT_SIZE; ii++)
+			PATHARR[i].Path[ii]=(int *) calloc(3, sizeof(int));
+		PATHARR[i].uSize=DEFAULT_SIZE;//Tiene DEFAULT_SIZE entradas sin inicializar
+		PATHARR[i].pSize=0;//No tiene entradas inicializadas
+	}
+	return alignments;
+}
+#undef	STR1
+#undef	STR2
+#undef	N_PATHS
+#undef	U_PATHS
+#undef	PATHARR
+//___________________________________________________________
 
 
 
@@ -123,13 +185,15 @@ struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix)
  * Cada vez que se encuentra una bifurcación se copia el alineamiento en construcción tantas veces como caminos nuevos se hayan encontrado.
  * No se usa una cola, en cambio, debido a que todo camino debe terminar n la entrada (0,0) de la matriz, los caminos inconclusos se localizan cuando el último paso en el camino no es {0, 0, -1}
  */
-{
+
 #define	STR1	(alignments->Str1)
 #define	STR2	(alignments->Str2)
 #define	N_PATHS	(alignments->nPaths)
+#define	U_PATHS	(alignments->uPaths)
 #define PATHARR	(alignments->Paths)
 #define PATH(path)	(PATHARR[path].Path)
 #define	PATHSIZE(path)	(PATHARR[path].pSize)
+#define	PATH_U_SIZE(path)	(PATHARR[path].uSize)
 #define PATHSCORE(path)	(PATHARR[path].pScore)
 #define LAST_PATH_ENTRY(path)	PATH(path)[PATHSIZE(path)-1]
 #define FILL_LAST_PATH_ENTRY(path, i, j, pointer)	\
@@ -144,31 +208,31 @@ struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix)
 #define DIAG 0
 #define VERT 1
 #define HORI 2
-
-	//Inicializa la estructura que contiene los caminos
-	struct tracebacks *alignments=(struct tracebacks *) malloc(sizeof(alignments));//Genera espacio para la estructura
-	STR1=(char *) calloc(strlen(AlignMatrix->Str1)+1, sizeof(char));//Genera espacio
-	strcpy(STR1, AlignMatrix->Str1);//Obtiene la cadena de texto inicial
-	STR2=(char *) calloc(strlen(AlignMatrix->Str2)+1, sizeof(char));//Genera espacio
-	STR2=strcpy(STR2, AlignMatrix->Str2);//Obtiene la cadena de texto objetivo
+{
+	//Inicializa la estructura que se llenará con los caminos
+	struct tracebacks *alignments=AllocTracebacksForMatrix(AlignMatrix);
 	
 	//Comienza a buscar caminos...
 	int len1=strlen(STR1), len2=strlen(STR2);//Recupera el tamaño de las cadenas y así, el de la matriz
 	int i, j, path, pointer, temp;//Inicializa contadores
-	//Inicializa los primeros caminos
-	PATHARR=(struct path *)calloc(1, sizeof(struct path));//Inicializa el arreglo de caminos.
-	i=len2, j=len1;//La posición inicial es desde la última entrada de la matriz
-	for(pointer=1, N_PATHS=0; pointer<=N_POINTERS(i,j); pointer++)//Haz tantos caminos como bifurcaciones haya desde la última entrada de la matriz
+	//Inicializa los primeros caminos.......................................................................
+	i=len2, j=len1;//La posición inicial es desde la última entrada de la matriz(Alineamiento global)
+	for(pointer=1; pointer<=N_POINTERS(i,j); pointer++)//Haz tantos caminos como bifurcaciones haya desde la última entrada de la matriz
 	{
-		N_PATHS++;//Incrementa la cuenta de caminos
-		PATHARR=(struct path *) realloc(PATHARR, N_PATHS*sizeof(struct path));//Haz espacio para el nuevo camino
-		PATHSIZE(N_PATHS-1)=1;
-		PATHSCORE(N_PATHS-1)=SCORE(i,j);
-		PATH(N_PATHS-1)=(int **)calloc(1, sizeof(int *));
-		LAST_PATH_ENTRY(N_PATHS-1)=(int *)calloc(3, sizeof(int));
-		FILL_LAST_PATH_ENTRY(N_PATHS-1, i, j, POINTER(pointer, i, j));//Llena correctamente la entrada del camino
+		//Verifica que no se necesite hacer espacio para más caminos...
+		if(U_PATHS==0)
+		{
+			//Si se requieren más caminos, has espacio para ellos
+			AllocMorePaths(alignments, DEFAULT_SIZE, DEFAULT_SIZE);
+		}
+		PATHSIZE(N_PATHS)++;//El nuevo camino tiene 1 entrada
+		PATH_U_SIZE(N_PATHS)--;//El nuevo camino tiene una entrada menos sin inicializar
+		PATHSCORE(N_PATHS)=SCORE(i,j);//El score del camino
+		FILL_LAST_PATH_ENTRY(N_PATHS, i, j, POINTER(pointer, i, j));//Llena correctamente la entrada del camino
+		N_PATHS++;//Incrementa los caminos inicializados
+		U_PATHS--;//Decrementa los caminos no inicializados
 	}
-	//Continúa a partir de ellos y encuentra los caminos
+	//Continúa a partir de ellos............................................................................
 	for(path=0; path<N_PATHS; path++)//Busca caminos inconclusos 
 	{
 		if( LAST_PATH_POINTER(path) != NO_POINTERS )//Checa si el camino está inconcluso (si todavía hay punteros desde esa entrada)
@@ -195,9 +259,13 @@ struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix)
 				}
 			}
 			//Coloca la siguiente entrada del camino
-			PATHSIZE(path)++;//Incrementa la cuenta del tamaño
-			PATH(path)=(int **)realloc(PATH(path), PATHSIZE(path)*sizeof(int *));//Haz espacio para la nueva entrada
-			LAST_PATH_ENTRY(path)=(int *)calloc(3, sizeof(int));//Genera la nueva entrada
+			//Verifica que no se necesite hacer espacio para más entradas...
+			if(U_PATHS==0)
+			{
+				//Se requiere extender el camino
+				ExtendPath(&PATHARR[path], DEFAULT_SIZE);
+			}
+			PATHSIZE(path)++, PATH_U_SIZE(path)--;//Incrementa el tamaño del camino
 			//Antes de colocar los datos en ella, verifica si es un final de camino
 			if(N_POINTERS(i,j)==0)//Si el número de punteros desde esa posición es 0....
 			{
@@ -209,14 +277,19 @@ struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix)
 			{
 				//El camino todavía está inconcluso, coloca los datos correspondientes para ser llenado
 				FILL_LAST_PATH_ENTRY(path, i, j, POINTER(1, i, j));//Llena la entrada con la posición y el primer puntero
-				//Si hay más de un puntero se tienen que hacer más caminos que los sigan
+				//Si hay más de un puntero se tienen que inicializar más caminos
 				for(pointer=2; pointer<=N_POINTERS(i,j); pointer++)
 				{
-					N_PATHS++;//Incrementa la cuenta de caminos
-					PATHARR=(struct path *)realloc(PATHARR, N_PATHS*sizeof(struct path));//Haz espacio para el nuevo camino
-					(PATHARR[N_PATHS-1].Path)=(int **)calloc(1, sizeof(int *));//Inicializalo para pasarlo a la función PathCopy()
-					PathCopy(&PATHARR[path], &PATHARR[N_PATHS-1]);//Copia el camino que bifurca hacia el nuevo camino
-					FILL_LAST_PATH_ENTRY(N_PATHS-1, i, j, POINTER(pointer, i, j));//Llena correctamente la última entrada del camino
+					//Verifica que no se necesite hacer espacio 
+					if(U_PATHS==0)
+					{
+						//Si se requiere espacio
+						AllocMorePaths(alignments, DEFAULT_SIZE, DEFAULT_SIZE);
+					}
+					PathCopy(&PATHARR[path], &PATHARR[N_PATHS]);//Copia el camino que bifurca hacia el nuevo camino
+					PATHSIZE(N_PATHS)++, PATH_U_SIZE(N_PATHS)--;//Añade la nueva entrada
+					FILL_LAST_PATH_ENTRY(N_PATHS, i, j, POINTER(pointer, i, j));//Llena correctamente la última entrada del camino
+					N_PATHS++, U_PATHS--;//Incrementa los caminos inicializados					
 				}
 			}
 		path=-1;//No estaba completo, reinicializa por si sigue igual
@@ -241,6 +314,57 @@ struct tracebacks *TracebacksFromMatrix(struct a_matrix *AlignMatrix)
 #undef DIAG 
 #undef VERT 
 #undef HORI
+#undef DEFAULT_SIZE
+}//___________________________________________________________
+
+
+
+void AllocMorePaths(struct tracebacks *alignments, int extra_entries, int path_size)
+/*
+ * Haz espacio para extra_entries nuevos caminos en la estructura alignments.
+ * Cada camino tiene path_size entradas.
+ */
+
+#define	N_PATHS	(alignments->nPaths)
+#define	U_PATHS	(alignments->uPaths)
+#define PATHARR	(alignments->Paths)
+{
+	//Incrementa el número de caminos
+	PATHARR=(struct path *) realloc(PATHARR, (N_PATHS+U_PATHS+extra_entries)*sizeof(struct path));
+	int prev_uninit=U_PATHS;//El número anterior de caminos sin inicializar
+	U_PATHS+=extra_entries;//Ahora hay más caminos sin inicializar
+	
+	//Haz espacio para cada camino nuevo, los caminos nuevos empiezan a partir del N_PATHS+prev_uninit
+	int i;
+	for(i=N_PATHS+prev_uninit; i < N_PATHS+U_PATHS; i++)
+	{
+		//Espacio para cada camino
+		PATHARR[i].Path = (int **) malloc(path_size * sizeof(int *));//Haz espacio para el camino con path_size entradas
+		int ii;
+		for(ii=0; ii < path_size; ii++)
+			PATHARR[i].Path[ii]=(int *) calloc(3, sizeof(int));//Cada entrada consta de tres enteros
+		PATHARR[i].uSize=path_size;//Tiene path_size entradas sin inicializar
+		PATHARR[i].pSize=0;//No tiene entradas inicializadas
+	}
+}
+#undef N_PATHS
+#undef U_PATHS
+#undef PATHARR
+//___________________________________________________________
+
+
+
+void ExtendPath(struct path *Path, int extra_entries)
+/*
+ * Añade extra_entries entradas al camino Path, inicializa el espacio correspondiente a cada entrada
+ */
+{
+	int old_size=(Path->uSize)+(Path->pSize);
+	(Path->Path)=(int **) realloc((Path->Path), old_size+extra_entries);//Genera espacio
+	int ii;
+	for(ii=old_size; ii < old_size+extra_entries; ii++)
+		(Path->Path)[ii]=(int *) calloc(3, sizeof(int));//Cada entrada consta de tres enteros
+	(Path->uSize)+=extra_entries;//Tiene extra_entries entradas nuevas sin inicializar
 }//___________________________________________________________
 
 
@@ -386,4 +510,4 @@ void PrintAlignments(struct align_expl *alignments)
 		PrintExplAlign(&alignments[i]);
 		PrintEditTr(EditTrFromExplAlign(&alignments[i]));
 	}
-}
+}//___________________________________________________________
