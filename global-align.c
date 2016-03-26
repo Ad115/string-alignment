@@ -34,25 +34,9 @@ int main(int argc, char *argv[])
 		printf("Ejemplo: %s vintners writers --scores=M20I-1D-1R-1 --type=max\n\n", argv[0]);
 		return 1;
 	}
-	
-	/* Debug... /
-	printf("\n\t\tDebug.........................\n\t\t===============================\n\
-	Argumentos pasados al programa:\n");
-	for(debug=0; debug<argc; debug++)
-		printf("(%d):\t\'%s\'\n", debug, argv[debug]);
-	/* ...Debug */
-	
+
 	char *string1=argv[1], *string2=argv[2]; // Obten las secuencias de texto, estas siempre son los dos primeros argumentos
 	char ***args = getArgs(argv, argc); // Obten las variables declaradas
-
-	/* Debug.../
-	printf("\n\t\tDebug.........................\n\t\t===============================\n\
-	Variables encontradas:\n");
-	for(debug=0; args[debug] != NULL; debug++)
-		printf("(%s):\t\'%s\'\n", args[debug][0], args[debug][1]);
-	/* ...Debug */
-	
-	
 	char *type=NULL;
 	float *scores=NULL;
 	int i;
@@ -62,25 +46,12 @@ int main(int argc, char *argv[])
 		{
 			type=dupStr(args[i][1]);
 			assert(type != NULL);
-			
-			/* Debug.../
-			printf("\n\tDebug.........................\n\t===============================\nEncontrada variable \"type\":\t%s\n", type);
-			/* ...Debug */
-			
 		}
 		else
 		{
 			if(equStr(args[i][0], "scores"))
 			{
 				scores=getScores(args[i][1]);
-				
-			/* Debug.../
-			printf("\n\tDebug.........................\n\t===============================\nEncontrada variable \"scores\":\t[");
-			for(debug=0; debug < 4; debug++)
-				printf("%f, ", scores[debug]);
-			printf("]\n");
-			/* ...Debug */
-			
 			}
 		}
 	}
@@ -92,20 +63,10 @@ int main(int argc, char *argv[])
 	}
 	free(args);
 	
-	/* Debug.../
-	printf("\n\tDebug.........................\n\t===============================\nLiberada variable args...\n");
-	/* ...Debug */
-
-	
 	//____________________Operaciones___________________________
 
 	
 	//_____________________Resultados____________________________
-	
-	/* Debug.../
-	printf("\n\tDebug.........................\n\t===============================\nIniciando alineamiento...\n");
-	/* ...Debug */
-	
 	GlobalAlignment(string1, string2, type, scores);
 	
 	return 0;

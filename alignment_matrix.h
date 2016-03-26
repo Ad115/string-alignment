@@ -86,33 +86,13 @@ La matriz resultante tiene una estructura como la que se muestra:
 Devuelve un puntero a una estructura de matriz.
  */
 {
-	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Creando matriz. Entrando a función AllocAlignMatrix()...\n");
-	printf("ARGUMENTOS RECIBIDOS:\n");
-	printf("Str1: %s(@%p), Str2: %s(@%p)...\n", str1, str1, str2, str2);
-	printf("Type: %s(@%p), AlignType: %s(@%p)...\n", type, type, aligntype, aligntype);
-	printf("Scores:\t[%f, %f, %f, %f](@%p)\n", scores[0], scores[1], scores[2], scores[3], scores); 
-	/* ...Debug */
-	
-	
 	int i,j;
 	int rows=strlen(str2)+1, cols=strlen(str1)+1;//Inicializa para crear la matriz
+	
 	
 	//Crea la estructura donde se aloja la matriz_____________________________
 	A_Matrix *A=(A_Matrix *) malloc(sizeof(*A));
 	assert(A != NULL);
-	
-	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Creada estructura de matriz\n");
-	//printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	//printf("Type: %s(&%p), AlignType: %s(&%p)...\n", (A->Type), &(A->Type), (A->AlignType), &(A->AlignType));
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	/* ...Debug */
-	
 	
 	
 	//Define las cadenas a alinear____________________________________________
@@ -120,15 +100,7 @@ Devuelve un puntero a una estructura de matriz.
 	assert((A->Str1) != NULL);
 	(A->Str2) = strdup(str2);
 	assert((A->Str2) != NULL);
-	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Generadas Str1, Str2...\n");
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	//printf("Scores (@%p):\t[%f (@%p), %f (@%p), %f (@%p), %f (@%p)]\n", (A->Scores), (A->Scores)[0], &((A->Scores)[0]), (A->Scores)[1], &((A->Scores)[1]), (A->Scores)[2], &((A->Scores)[2]), (A->Scores)[3], &((A->Scores)[3])); 
-	/* ...Debug */
-	
+
 	
 	//Define el tipo de matriz_________________________________________________
 	if(type==NULL)
@@ -136,16 +108,7 @@ Devuelve un puntero a una estructura de matriz.
 	else
 		(A->Type) = strdup(type);
 	assert((A->Type) != NULL);
-	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Generado Type...\n");
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	printf("Type: %s(&%p)...\n", (A->Type), &(A->Type));
-	//printf("Scores (@%p):\t[%f (@%p), %f (@%p), %f (@%p), %f (@%p)]\n", (A->Scores), (A->Scores)[0], &((A->Scores)[0]), (A->Scores)[1], &((A->Scores)[1]), (A->Scores)[2], &((A->Scores)[2]), (A->Scores)[3], &((A->Scores)[3])); 
-	/* ...Debug */
-	
+
 	
 	//Define el tipo de alineamiento___________________________________________
 	if(aligntype==NULL)
@@ -153,34 +116,9 @@ Devuelve un puntero a una estructura de matriz.
 	else
 		(A->AlignType) = strdup(aligntype);
 	assert((A->AlignType) != NULL);
-	
-	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Generado AlignType...\n");
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	printf("Type: %s(&%p), AlignType: %s(&%p)...\n", (A->Type), &(A->Type), (A->AlignType), &(A->AlignType));
-	//printf("Scores (@%p):\t[%f (@%p), %f (@%p), %f (@%p), %f (@%p)]\n", (A->Scores), (A->Scores)[0], &((A->Scores)[0]), (A->Scores)[1], &((A->Scores)[1]), (A->Scores)[2], &((A->Scores)[2]), (A->Scores)[3], &((A->Scores)[3])); 
-	/* ...Debug */
-	
-	
-	//Define los costos de operación__________________________________________
-// 	(A->Scores) = (float *) malloc(4 * sizeof(float));//Genera el arreglo de costos
-// 	
-
-// 	
-// 	assert((A->Scores) != NULL);
-// 	
-// 	/* Debug...*/
-// 	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-// 	printf("Generado puntero Scores...\n");printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-// 	printf("Type: %s(&%p), AlignType: %s(&%p)...\n", (A->Type), &(A->Type), (A->AlignType), &(A->AlignType));
-// 	printf("Scores:\t[%f, %f, %f, %f]\n", (A->Scores)[0], (A->Scores)[1], (A->Scores)[2], (A->Scores)[3]);
-// 	/* ...Debug */
-	
 
 	
+	//Define los costos de operación__________________________________________	
 	(A->Scores) = (float *) malloc(4 * sizeof(*scores));
 	if(scores==NULL)
 	{
@@ -190,19 +128,8 @@ Devuelve un puntero a una estructura de matriz.
 	{
 		for(i=0; i<4; i++)
 			(A->Scores)[i]=scores[i]; //Carga los valores dados
-		//(A->Scores)[0]=scores[0], (A->Scores)[1]=scores[1], (A->Scores)[2]=scores[2], (A->Scores)[3]=scores[3];//Carga los valores otorgados
 	}
-	
-		/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Inicializado arreglo Scores...\n");
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	printf("Type: %s(&%p), AlignType: %s(&%p)...\n", (A->Type), &(A->Type), (A->AlignType), &(A->AlignType));
-	printf("Scores (@%p):\t[%f (@%p), %f (@%p), %f (@%p), %f (@%p)]\n", (A->Scores), (A->Scores)[0], &((A->Scores)[0]), (A->Scores)[1], &((A->Scores)[1]), (A->Scores)[2], &((A->Scores)[2]), (A->Scores)[3], &((A->Scores)[3])); 
-	/* ...Debug */
-	
-	
+
 	
 	//Genera las entradas de la matriz________________________________________
 	Entry **M=(Entry **) malloc(rows * sizeof(Entry *));//Genera el espacio para la matriz, en específico para los punteros a las filas
@@ -216,24 +143,8 @@ Devuelve un puntero a una estructura de matriz.
 	}
 	(A->M)=M;
 	
-	/* Debug.../
-	printf("\n\tDebugeando función AllocAlignMatrix()........\n\t===============================\n");
-	printf("Terminado crear matriz, saliendo de función AllocAlignMatrix()...\n");
-	printf("ARGUMENTOS RECIBIDOS:\n");
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", str1, &str1, str2, &str2);
-	printf("Type: %s(&%p), AlignType: %s(&%p)...\n", type, &type, aligntype, &aligntype);
-	printf("Scores:\t[%f, %f, %f, %f] (@%p)\n", scores[0], scores[1], scores[2], scores[3], scores); 
-	printf("MOSTRANDO MATRIZ GENERADA:\n");
-	printf("A_Matrix *A (@%p):\n\t char *Str1 (@%p) -> (@%p)\n\t char *Str2 (@%p) -> (@%p)\n\tchar *Type (@%p) -> (@%p)\n\t char *AlignType (@%p) -> (@%p)\n\t float *Scores (@%p) -> (@%p)\n\t Entry **M (@%p) -> (@%p)\n", A, &(A->Str1), (A->Str1), &(A->Str2), (A->Str2), &(A->Type), (A->Type), &(A->AlignType), (A->AlignType), &(A->Scores), (A->Scores), &(A->M), (A->M));
-	printf("Str1: %s(&%p), Str2: %s(&%p)...\n", (A->Str1), &(A->Str1), (A->Str2), &(A->Str2));
-	printf("Type: %s(&%p), AlignType: %s(&%p)...\n", (A->Type), &(A->Type), (A->AlignType), &(A->AlignType));
-	printf("Scores (@%p):\t[%f (@%p), %f (@%p), %f (@%p), %f (@%p)]\n", (A->Scores), (A->Scores)[0], &((A->Scores)[0]), (A->Scores)[1], &((A->Scores)[1]), (A->Scores)[2], &((A->Scores)[2]), (A->Scores)[3], &((A->Scores)[3])); 
-	PrintAlignMatrix(A);	
-	/* ...Debug */
 	
-	
-	
-	return A;
+	return A; // Regresa la matriz________________________________________
 }//___________________________________________________________
 
 
@@ -573,71 +484,17 @@ void FreeAlignMatrix(A_Matrix *AlignMatrix)
  * Libera el espacio de una estructura a_matrix previamente alojada con AllocAlignMatrix()
  */
 {
-	
-	/* Debug.../
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Procediendo a liberar las filas...\n");
-	/* ...Debug */
-	
 	int i, rows=(strlen(AlignMatrix->Str2)+1);
 	for(i=0; i<rows; i++)
 	{
-		
-		/* Debug... /
-		printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-		printf("Liberando fila %d...\n", i);
-		/* ...Debug */
-		
 		free((AlignMatrix->M)[i]);
 	}
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Matriz...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->M);
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Str1...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->Str1);
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Str2...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->Str2);
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Scores...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->Scores);
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Type...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->Type);
-	
-	/* Debug... /
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando AlignType...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix->AlignType);
-	
-	/* Debug.../
-	printf("\n\tDebugeando función FreeAlignMatrix()........\n\t===============================\n");
-	printf("Liberando Estructura...\n");
-	/* ...Debug */
-	
 	free(AlignMatrix);
 }//___________________________________________________________
 
