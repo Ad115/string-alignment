@@ -223,32 +223,16 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
 #define VERT '|'
 #define HORI '-'
 {
-	
-	/* Debug.../
-	printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-	printf("Llamando función AllocTracebackForMatrix()...\n");
-	/* ...Debug */
-	
 	//Inicializa la estructura que se llenará con los caminos
 	Traceback *traceback=AllocTracebackForMatrix(AlignMatrix);
 	assert(traceback != NULL);
-	
-	/* Debug.../
-	printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-	printf("Traceback inicializados...\n");
-	/* ...Debug */
-	
+
 	int i, j, len1=strlen(STR1), len2=strlen(STR2);//Recupera el tamaño de las cadenas y así, el de la matriz
 	if(ii==-1 && jj==-1)
 		i=len2, j=len1;//La posición inicial es desde la última entrada de la matriz(Alineamiento global)
 	else
 		i=ii, j=jj;
-	
-	/* Debug.../
-	printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-	printf("Comenzando búsqueda de caminos desde la entrada (%d, %d), que tiene %d punteros...\n", i, j, N_POINTERS(i,j));
-	/* ...Debug */
-	
+
 	//Comienza a buscar caminos...
 	int path, pointer, temp;//Inicializa contadores
 	//Inicializa los primeros caminos.......................................................................
@@ -260,30 +244,12 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
 		PATH_U_SIZE(I_PATHS)--;//El nuevo camino tiene una entrada menos sin inicializar
 		I_PATHS++;//Incrementa los caminos inicializados
 		U_PATHS--;//Decrementa los caminos no inicializados
-		
-		/* Debug.../
-		printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-		printf("POINTER(pointer,i,j)=%c, i=%d, j=%d, pointer=%d\n", POINTER(pointer, i, j), i, j, pointer);
-		/* ...Debug */
-		
-		
-		/* Debug.../
-		printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-		printf("Inicializando caminos. Nuevo camino %d, score: %d. Entrada : ( %d, %d, %c)...\n", I_PATHS-1, (int)PATHSCORE(I_PATHS-1), i, j, POINTER(pointer,i,j));
-		/* ...Debug */
-		
 	}
 	//Continúa a partir de ellos............................................................................
 	for(path=0; path<I_PATHS; path++)//Busca caminos inconclusos 
 	{
 		if( LAST_PATH_POINTER(path) != NO_POINTERS )//Checa si el camino está inconcluso (si todavía hay punteros desde esa entrada)
 		{
-			
-			/* Debug.../
-			printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-			printf("Camino inconcluso detectado...");
-			/* ...Debug */
-			
 			//El camino path está inconcluso, complétalo
 			i=LAST_PATH_ENTRY(path)[0], j=LAST_PATH_ENTRY(path)[1];//Obtiene las i y j donde el camino se quedó
 			//Encuentra los siguientes valores de i y j
@@ -311,12 +277,6 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
 			//Verifica que no se necesite hacer espacio para más entradas...
 			if(PATH_U_SIZE(path)==0)
 			{
-				
-				/* Debug.../
-				printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-				printf("Camino lleno. Extendiendo camino %d...\n", path);
-				/* ...Debug */
-				
 				//Se requiere extender el camino
 				ExtendPath(&PATHARR[path], DEFAULT_SIZE);
 			}
@@ -327,33 +287,12 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
 				//Llena la entrada con la posición i,j y el marcador NO_POINTERS que indica el fin del camino
 				FILL_NEXT_PATH_ENTRY(path, i, j, NO_POINTERS);
 				PATH_I_SIZE(path)++, PATH_U_SIZE(path)--;//Incrementa el tamaño del camino
-				
-				/* Debug.../
-				printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-				printf("Camino completo %d. Entrada %d: ( %d, %d, NO_POINTERS)...\n", path, PATH_I_SIZE(path)-1, i, j);
-				/* ...Debug */
-				
-				/* Debug.../
-				printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-				printf("Imprimiendo camino finalizado...\n");
-				printf("Camino: %d, Score: %d, Entradas inicializadas: %d, Entradas sin inicializar: %d\n", path, (int)PATHSCORE(path), PATH_I_SIZE(path), PATH_U_SIZE(path));
-				for(debug=0; debug<PATH_I_SIZE(path); debug++)
-					printf("(%d,%d,%c),", PATHARR[path].Path[debug][0], PATHARR[path].Path[debug][1], PATHARR[path].Path[debug][2]);
-				printf("\n");
-				/* ...Debug */
-				
 			}
 			else//Si todavía hay punteros desde aquí...
 			{
 				//El camino todavía está inconcluso, coloca los datos correspondientes para ser llenado
 				FILL_NEXT_PATH_ENTRY(path, i, j, POINTER(0, i, j));//Llena la entrada con la posición y el primer puntero
 				PATH_I_SIZE(path)++, PATH_U_SIZE(path)--;//Incrementa el tamaño del camino
-				
-				/* Debug.../
-				printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-				printf("Completando camino %d. Entrada añadida %d: ( %d, %d, %c)...\n", path, PATH_I_SIZE(path)-1, i, j, POINTER(0, i, j));
-				/* ...Debug */
-				
 				//Si hay más de un puntero se tienen que inicializar más caminos
 				for(pointer=1; pointer<N_POINTERS(i,j); pointer++)
 				{
@@ -362,48 +301,17 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
 					{
 						//Si se requiere espacio
 						AllocMorePaths(traceback, DEFAULT_SIZE, DEFAULT_SIZE);
-						
-						/* Debug.../
-						printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-						printf("Se necesita nuveo camino y no hay disponibles. Creando nuevos caminos.....");
-						/* ...Debug */
-						
 					}
 					PathCopy(&PATHARR[path], &PATHARR[I_PATHS], 1);//Copia el camino que bifurca hacia el nuevo camino
-					
-					/* Debug.../
-					printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-					printf("Divergencia encontrada. Copiando camino %d en el camino %d...\n", path, I_PATHS);
-					/* ...Debug */
-					
 					FILL_NEXT_PATH_ENTRY(I_PATHS, i, j, POINTER(pointer, i, j));//Llena correctamente la última entrada del camino
 					PATH_I_SIZE(I_PATHS)++, PATH_U_SIZE(I_PATHS)--;//Añade la nueva entrada
 					I_PATHS++, U_PATHS--;//Incrementa los caminos inicializados
-					
-					/* Debug.../
-					printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-					printf("Completando camino nuevo %d. Entrada añadida %d: ( %d, %d, %c)...\n", I_PATHS-1, PATH_I_SIZE(I_PATHS-1)-1, i, j, POINTER(pointer, i, j));
-					/* ...Debug */
-					
 				}
 			}
 		path=-1;//No estaba completo, reinicializa por si sigue igual
 		}//El camino ya está completo, sigue buscando
 	}//Ya no hay caminos inconclusos, ya terminaste! :D
-	
-	/* Debug...*/
-	printf("\n\tDebugeando función TracebackFromMatrixEntry()........\n\t===============================\n");
-	printf("Imprimiendo estructura final....\n");
-	printf("Str1: %s\nStr2: %s\niPaths: %d, uPaths: %d\nPaths:", STR1, STR2, I_PATHS, U_PATHS);
-	for(path=0; path<I_PATHS; path++)
-	{
-		printf("\nCamino: %d, Score: %d, Entradas inicializadas: %d, Entradas sin inicializar: %d\n", path, (int)PATHSCORE(path), PATH_I_SIZE(path), PATH_U_SIZE(path));
-		for(debug=0; debug<PATH_I_SIZE(path); debug++)
-			printf("(%d,%d,%c),", PATHARR[path].Path[debug][0], PATHARR[path].Path[debug][1], PATHARR[path].Path[debug][2]);
-		printf("\n");
-	}
-	/* ...Debug */
-	
+
 	return traceback;//Devuelve los resultados. 
 #undef	STR1
 #undef	STR2

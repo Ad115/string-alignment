@@ -115,67 +115,23 @@ void GlobalAlignment(const char *str1, const char *str2, const char *type, const
 	//Obtiene la matriz de alineamiento
 	A_Matrix *AlignMatrix = AllocAlignMatrix(str1, str2, type, align_type, scores);//Genera espacio para la matriz
 	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nGenerada la matriz...Llenando la matriz...\n");
-	printf("AlignType: (%s)\n", (AlignMatrix->AlignType));
-	/* ...Debug */
-	
 	FillAlignMatrix(AlignMatrix);//Llena la matriz
-	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nMatriz llena...Imprimiendo...\n");
-	printf("AlignType: (%s)\n", (AlignMatrix->AlignType));
-	/* ...Debug */
-	
-	
-	PrintAlignMatrix(AlignMatrix);
-	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nFinalizado crear matriz.\n");
-	printf("\nIniciando traceback...\n");
-	/* ...Debug */
+	//PrintAlignMatrix(AlignMatrix);
 	
 	//Obtén los caminos
 	Traceback *traceback=TracebackFromMatrixEntry(AlignMatrix,-1, -1);
 	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nFinalizado realizar traceback.\n");
-	printf("\nLiberando matriz...Omitido\n");
-	/* ...Debug */
-	
-	
 	//Libera el espacio ocupado por la matriz
 	FreeAlignMatrix(AlignMatrix);
-	
-	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nLiberada la matriz de alineamiento...\n");
-	printf("\nGenerando alineamientos...\n");
-	/* ...Debug */
-	
 	
 	//Obtén los alineamientos globales óptimos de la matriz
 	Align *aligns=ExplAlignsFromTraceback(traceback);//El arreglo de alineamientos
 	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nAlineamientos completos...\n");
-	printf("\nLiberando tracebacks...\n");
-	/* ...Debug */
-	
 	//Libera el espacio ocupado por los caminos
 	FreeTraceback(traceback);
 	
-	/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nLiberados los tracebacks...\n");
-	printf("\nImprimiendo alineamientos...\n");
-	/* ...Debug */
-	
 	//Imprime los alineamientos
 	PrintAlignments(aligns);
-	
-		/* Debug...*/
-	printf("\n\tDebug.........................\n\t===============================\nLiberando alineamientos...\n");
-	/* ...Debug */
 	
 	FreeAligns(aligns);
 }//___________________________________________________________

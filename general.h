@@ -226,11 +226,6 @@ char *getVal(const char *str)
  * args[i]=NULL marca el final de la lista.
  */
 {
-	/* Debug... 
-	int debug;
-	printf("\n\tDebugeando función getArgs()\n\t===============================\n");
-	/* ...Debug */
-	
 	char ***args=(char ***) calloc(1, sizeof(char **));
 	assert(args != NULL);
 	int i, nargs;
@@ -238,12 +233,6 @@ char *getVal(const char *str)
 	{
 		if(argv[i][0]=='-' && argv[i][1]=='-')//Si el argumento comienza con "--"
 		{
-			
-			/* Debug... 
-			printf("\n\tArgumento encontrado...\n");
-			printf("(nargs: %d, i: %d):\t\'%s\'\n", nargs, i, argv[i]);
-			/* ...Debug */
-			
 			nargs++;//Incrementa la cuenta de pares
 			args=(char ***)realloc(args, nargs*sizeof(char **));//Haz espacio para el nuevo par
 			assert(args != NULL);
@@ -251,10 +240,6 @@ char *getVal(const char *str)
 			assert(args[nargs-1] != NULL);
 			args[nargs-1][0]=getVar(argv[i]);
 			args[nargs-1][1]=getVal(argv[i]);
-			
-			/* Debug... 
-			printf("Variable: '%s', Valor: '%s'", args[nargs-1][0], args[nargs-1][1]);
-			/* ...Debug */
 		}
 	}
 	args = (char ***)realloc(args, (nargs+1)*sizeof(char **));
