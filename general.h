@@ -1,44 +1,75 @@
+# ifndef STRING_ALIGN_GENERAL
+# define STRING_ALIGN_GENERAL
 /*
-*****************************************************************************
-                        Librería de funciones generales              
-*****************************************************************************/
-/*
-***Librería que contiene funciones no especializadas.
-	Las funciones de esta versión se utilizan en global_align.c
+==============================
+Librería: Funciones generales.
+==============================
 
-***La librería contiene:
-*/
-	//1. Funciones generales:				//NO ESPECIALIZADAS, PUEDEN SER USADAS EN OTROS PROGRAMAS
-		float Min(const float *numbers, const int size); // Encuentra el mínimo de los valores en numbers, de longitud size
-		float Max(const float *numbers, const int size); // Encuentra el máximo de los valores en numbers, donde numbers tiene size entradas
-		void swap(char *s, const int a, const int b); // Intercambia los valores s[a] y s[b] en la cadena de texto str
-		void insert(const char c, const int pos, char *s); //Inserta el caracter c en la cadena de texto str, de tal manera que str[pos]=c, los otros valores se recorren al final de la cadena
-		float *getNum(const char *str, const int pos); //Obtiene el valor numérico en la cadena str desde la posición pos, además de la posición del siguiente caracter no numérico.
-		char ***getArgs(char **argv, const int argc); //De la lista de strings argv con argc cadenas, obtiene las variables declaradas como "--var=val".
-		char *getVar(const char *str); //str es una declaración de variable de la forma "--variable=valor". Obtiene "variable".
-		char *getVal(const char *str); //str es una declaración de variable de la forma "--variable=valor". Obtiene "valor". 
-		int equStr(const char *str1, const char *str2); //Verdadero (1) si str1 es igual a str2.
-		char *dupStr(const char *ref_str); //Genera un duplicado de la cadena de referencia ref_str y devuelve un puntero a la copia
-		void copyStr(char *copy, const char *ref_str); // Copia ref_str a copy, asumiendo que el espacio es suficiente hasta el primer caracter nulo
+Funciones de uso general que pueden ser utilizadas en otros programas por su caracter poco específico.
+
+
+Las siguientes son las funciones declaradas aquí:
+
+:float Min(const float *numbers, const int size):
+	Encuentra el mínimo de los valores en numbers, de longitud size.
 	
-/*	
-Andrés García García @ 12/Mar/'16 (Inicio 19 Oct 2015)
+:float Max(const float *numbers, const int size):
+	Encuentra el máximo de los valores en numbers, donde numbers tiene size entradas.
+	
+:void swap(char *s, const int a, const int b):
+	Intercambia los valores s[a] y s[b] en la cadena de texto str.
+	
+:void insert(const char c, const int pos, char *s):
+	Inserta el caracter c en la cadena de texto str, de tal manera que str[pos]=c, los otros valores se recorren al final de la cadena.
+	
+:float *getNum(const char *str, const int pos):
+	Obtiene el valor numérico en la cadena str desde la posición pos, además de la posición del siguiente caracter no numérico.
+	
+:char ***getArgs(char **argv, const int argc):
+	De la lista de strings argv con argc cadenas, obtiene las variables declaradas como "--var=val".
+	
+:char *getVar(const char *str):
+	str es una declaración de variable de la forma "--variable=valor". Obtiene "variable".
+	
+:char *getVal(const char *str):
+	str es una declaración de variable de la forma "--variable=valor". Obtiene "valor".
+	
+:int equStr(const char *str1, const char *str2):
+	Verdadero (1) si str1 es igual a str2.
+	
+char *dupStr(const char *ref_str):
+	Genera un duplicado de la cadena de referencia ref_str y devuelve un puntero a la copia.
+	
+void copyStr(char *copy, const char *ref_str):
+	Copia la cadena de referencia ref_str a copy, caracter por caracter, asume que hay espacio suficiente en copy.
+
+Los prototipos de las funciones y las estructuras están declarados en el archivo alignments_headers.h
+
+:Autor:
+	Andrés García García @ 28/Feb/'16 (Inicio 19 Oct 2015)
 */
 
-#include<stdio.h>
-#include<stdlib.h>//Para usar malloc(), calloc(), realloc(), free()
-#include<string.h>//Para usar strlen() y strcpy()
+//Librerías
+# include <stdio.h>
+# include <assert.h>//Para verificar errores con la función assert()
+# include <stdlib.h>//Para usar malloc(), calloc(), realloc(), free()
+# include <string.h>//Para usar strlen() y strcpy()
+# include "alignments_headers.h"
+
+int debug; // Variable global para debugear :P
 
 
-
-//**********************---------1.--------******************************************************
-//**********************FUNCIONES GENERALES******************************************************
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Funciones para recuperar alineamientos.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 float Min(const float *numbers, const int size)
 /*
 *	Min
-* 	___
+* 	----
 * 	Numbers es un arreglo de size números, Min(numbers, size) devuelve el menor valor
 */
 {
@@ -47,7 +78,7 @@ float Min(const float *numbers, const int size)
 	for(i=0, min=numbers[0]; i<size; i++)
 		min=MIN(min, numbers[i]);
 	return min;
-}
+}//___________________________________________________________
 
 
 
@@ -60,7 +91,7 @@ float Max(const float *numbers, const int size)
 	for(i=0, max=numbers[0]; i<size; i++)
 		max=MAX(max, numbers[i]);
 	return max;
-}
+}//___________________________________________________________
 
 
 
@@ -195,6 +226,11 @@ char *getVal(const char *str)
  * args[i]=NULL marca el final de la lista.
  */
 {
+	/* Debug... 
+	int debug;
+	printf("\n\tDebugeando función getArgs()\n\t===============================\n");
+	/* ...Debug */
+	
 	char ***args=(char ***) calloc(1, sizeof(char **));
 	assert(args != NULL);
 	int i, nargs;
@@ -202,6 +238,12 @@ char *getVal(const char *str)
 	{
 		if(argv[i][0]=='-' && argv[i][1]=='-')//Si el argumento comienza con "--"
 		{
+			
+			/* Debug... 
+			printf("\n\tArgumento encontrado...\n");
+			printf("(nargs: %d, i: %d):\t\'%s\'\n", nargs, i, argv[i]);
+			/* ...Debug */
+			
 			nargs++;//Incrementa la cuenta de pares
 			args=(char ***)realloc(args, nargs*sizeof(char **));//Haz espacio para el nuevo par
 			assert(args != NULL);
@@ -209,6 +251,10 @@ char *getVal(const char *str)
 			assert(args[nargs-1] != NULL);
 			args[nargs-1][0]=getVar(argv[i]);
 			args[nargs-1][1]=getVal(argv[i]);
+			
+			/* Debug... 
+			printf("Variable: '%s', Valor: '%s'", args[nargs-1][0], args[nargs-1][1]);
+			/* ...Debug */
 		}
 	}
 	args = (char ***)realloc(args, (nargs+1)*sizeof(char **));
@@ -245,7 +291,9 @@ char *dupStr(const char *ref_str)
 	if (copy != NULL)//Si no hubo problemas de espacio, procede a copiar la cadena
 		copyStr(copy, ref_str);
 	return copy;//Devuelve la nueva cadena
-}
+}//___________________________________________________________
+
+
 
 void copyStr(char *copy, const char *ref_str)
 /*
@@ -256,4 +304,6 @@ void copyStr(char *copy, const char *ref_str)
 	for(i=0; ref_str[i] != '\0'; i++)
 		copy[i] = ref_str[i];
 	copy[i] = '\0';
-}
+}//___________________________________________________________
+
+# endif
