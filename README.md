@@ -31,5 +31,6 @@ Currently only global align has been succesfully implemented.
       EditTr: R I M D M D M M M 
       
  * Next changes:
-  - Optimization of traceback algorithm. (Too slow, currently based on continuous resizing of array)
-  - Implement local alignments
+  - Improve documentation.
+  - Add strings to align from external files.
+  - Implement local alignments.
