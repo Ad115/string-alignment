@@ -16,11 +16,11 @@ Esta librería utiliza las siguientes estructuras como base::
 			float Value;
 			int N_Pointers;
 			char Pointers[3];
-			
+
 		} Entry;
 		//___________________________________________________________
-		
-		
+
+
 		typedef struct A_Matrix_struct
 		// Estructura de la matriz de alineamiento, se compone de ambas secuencias de texto y las entradas de la matriz.
 		{
@@ -30,31 +30,31 @@ Esta librería utiliza las siguientes estructuras como base::
 			char *AlignType;
 			float *Scores;
 			Entry **M;
-			
+
 		} A_Matrix;
 		//___________________________________________________________
-		
-		
+
+
 Las siguientes son las funciones declaradas aquí:
 
 :A_Matrix *AllocAlignMatrix(const char *str1, const char *str2, const char *type, const char *aligntype, const float *scores):
 	Genera espacio para una matriz de alineamiento general con las cadenas de texto Str1 y Str2.
-	
+
 :float *getScores(const char *scoreStr):
 	Obtiene los costos de operación expresados en scoreStr.
-	
+
 :void Score(A_Matrix *Al, const int i, const int j, float (*Compare)(const float *numbers, const int size)):
 	LLena la entrada i,j de la matriz AlignMatrix utilizando la función Compare para seleccionar la entrada correcta
-	
+
 :void FillAlignMatrix(A_Matrix *AlignMatrix):
 	LLena la matriz AlignMatrix con los valores y punteros correspondientes con ayuda de la función Score()
-	
+
 :void PrintAlignMatrixNoPointers(const A_Matrix *AlignMatrix):
 	Imprime sólo las entradas de la matriz de alineamiento AlignMatrix (sin punteros)
-	
+
 :void PrintAlignMatrix(const A_Matrix *AlignMatrix):
 	Imprime la matriz de alineamiento AlignMatrix, incluyendo los punteros de traceback, estos son: \(diagonal) |(vertical) y _(horizontal)
-	
+
 :void FreeAlignMatrix(A_Matrix *AlignMatrix):
 	Libera el espacio de una estructura a_matrix previamente alojada con AllocAlignMatrix().
 
@@ -65,7 +65,7 @@ Los algoritmos están basados en los encontrados en el libro:
 	*Algoritms on Strings, Trees and Sequences-Computer Science and Computational Biology*
 	Dan Gusfield
 	Cambridge University Press (1997)
-	
+
 :Autor:
 	Andrés García García @ 28/Feb/'16 (Inicio 19 Oct 2015)
 */
@@ -92,7 +92,7 @@ A_Matrix *AllocAlignMatrix(const char *str1, const char *str2, const char *type,
 Aloja espacio para crear una matriz de  alineamiento o similaridad de los textos Str1 y Str2.
 Srt1 es representada en las columnas y Str2 en las filas.
 La matriz resultante tiene una estructura como la que se muestra:
-	matrix[i]={fila i},	donde i=0...m, 
+	matrix[i]={fila i},	donde i=0...m,
 	matrix[i][j]=elemento(i,j)
 	matrix->Str1=Cadena de texto a transformar.
 	matrix->Str2=Cadena de texto objetivo.
@@ -102,7 +102,7 @@ Devuelve un puntero a una estructura de matriz.
 {
 	int i,j;
 	int rows=strlen(str2)+1, cols=strlen(str1)+1;//Inicializa para crear la matriz
-	
+
 	//Crea la estructura donde se aloja la matriz_____________________________
 	A_Matrix *A=(A_Matrix *) malloc(sizeof(*A));
 	assert(A != NULL);
@@ -122,7 +122,7 @@ Devuelve un puntero a una estructura de matriz.
 
 	//Define el tipo de alineamiento___________________________________________
 	if(aligntype==NULL)
-		(A->AlignType) = strdup(DEFAULT_ALIGN);//Define el alineamiento por defecto 
+		(A->AlignType) = strdup(DEFAULT_ALIGN);//Define el alineamiento por defecto
 	else
 		(A->AlignType) = strdup(aligntype);
 	assert((A->AlignType) != NULL);
@@ -159,7 +159,7 @@ Devuelve un puntero a una estructura de matriz.
 float *getScores(const char *scoreStr)
 /*Obtiene un arreglo con los costos de operación con el formato: [ M, R, I, D] (Match, Replacement, Insertion, Deletion).
  * Recibe una string donde se especifican pares operación costo, por ejemplo, si se requiere que M=1, I=-1, R=0,
- * una cadena apropiada sería "M1I-1R0", no importa el orden en que se especifican los costos y no es necesario 
+ * una cadena apropiada sería "M1I-1R0", no importa el orden en que se especifican los costos y no es necesario
  * especificar valores para todas las operaciones.
  * Si un valor no se especifica, los valores por defecto son: M=0, R=1, I=1, D=1
  */
@@ -207,7 +207,7 @@ float *getScores(const char *scoreStr)
 			}
 			default:
 			{
-				printf("\nADVERTENCIA: Operación no definida '%c' al obtener costos, por defecto se ha omitido\n", scoreStr[i]); 
+				printf("\nADVERTENCIA: Operación no definida '%c' al obtener costos, por defecto se ha omitido\n", scoreStr[i]);
 				i++;
 			}
 		}
@@ -226,26 +226,26 @@ void PrintAlignMatrixNoPointers(const A_Matrix *AlignMatrix)
 #define ALIGN_TYPE	(AlignMatrix->AlignType)
 #define SCORES	(AlignMatrix->Scores)
 #define VALUE(i,j)	(AlignMatrix->M)[i][j].Value
-	
+
 	int rows=(strlen(STR2)+1), cols=(strlen(STR1)+1);//Recupera el tamaño de la matriz
 	int i,j;
-	
+
 	//Imprime los costos, el tipo de matriz y las secuencias asociadas
 	//Imprime el tipo de matriz y alineamiento:
 	printf("\n\t\tAlineamiento %s, Matriz de %s:\n",
-		   (equStr(ALIGN_TYPE, "global") ? "Global" : "Local"), 
+		   (equStr(ALIGN_TYPE, "global") ? "Global" : "Local"),
 		   (equStr(TYPE, "min") ? "Distancia" : "Similaridad"));
 	//Imprime las secuencias:
 	printf("\nStr1:\t%s\nStr2:\t%s\n", STR1, STR2);
 	//Imprime los costos o scores
-	printf("Scores:\tMatch = %f,\tReplacement = %f,\tInsertion = %f,\tDeletion = %f.\n", SCORES[0], SCORES[1], SCORES[2], SCORES[3]); 
-	
+	printf("Scores:\tMatch = %f,\tReplacement = %f,\tInsertion = %f,\tDeletion = %f.\n", SCORES[0], SCORES[1], SCORES[2], SCORES[3]);
+
 	//Imprime la matriz
 	//Imprime primero la cadena de texto asociada a las columnas
 	for(j=-1; j<cols; j++)
 		printf("\t%c", (j<=0 ? ' ':STR1[j-1]));
 	printf("\n");
-	
+
 	//Imprime las entradas de la matriz
 	for(i=0; i<rows; i++)//Lee filas
 	{
@@ -281,10 +281,10 @@ void PrintAlignMatrix(const A_Matrix *AlignMatrix)
 #define DIAG '\\'
 #define VERT '|'
 #define HORI '-'
-	
+
 	int rows=(strlen(STR2)+1), cols=(strlen(STR1)+1);//Recupera el tamaño de la matriz
 	int i,j,p;
-	
+
 	//Imprime los costos, el tipo de matriz y las secuencias asociadas
 	//Imprime el tipo de matriz y alineamiento:
 	printf("\n\t\tAlineamiento %s (%s), Matriz de %s (%s):\n",
@@ -293,8 +293,8 @@ void PrintAlignMatrix(const A_Matrix *AlignMatrix)
 	//Imprime las secuencias:
 	printf("\nStr1:\t%s\nStr2:\t%s\n", STR1, STR2);
 	//Imprime los costos o scores
-	printf("Scores:\tMatch = %f,\tReplacement = %f,\tInsertion = %f,\tDeletion = %f.\n", SCORES[0], SCORES[1], SCORES[2], SCORES[3]); 
-	
+	printf("Scores:\tMatch = %f,\tReplacement = %f,\tInsertion = %f,\tDeletion = %f.\n", SCORES[0], SCORES[1], SCORES[2], SCORES[3]);
+
 	//Imprime la matriz
 	//Imprime primero la cadena de texto asociada a las columnas
 	printf("\t\t");
@@ -327,7 +327,7 @@ void PrintAlignMatrix(const A_Matrix *AlignMatrix)
 #undef TYPE
 #undef ALIGN_TYPE
 #undef SCORES
-#undef MATRIX 
+#undef MATRIX
 #undef VALUE
 #undef N_POINTERS
 #undef POINTER
@@ -353,7 +353,7 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 {
 #define STR1 (Al->Str1)
 #define STR2 (Al->Str2)
-#define MATRIX (Al->M) 
+#define MATRIX (Al->M)
 #define N_POINTERS MATRIX[i][j].N_Pointers
 #define VALUE(i,j) MATRIX[i][j].Value
 #define POINTER(p) MATRIX[i][j].Pointers[p]
@@ -369,8 +369,8 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 #define D (Al->Scores)[3]
 	//Inicializa
 	N_POINTERS=0;//Número de punteros inicial nulo.
-	
-	
+
+
 	if(i==0 || j==0)//Si está a la orilla
 	{
 		//.................................................
@@ -392,7 +392,7 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 	{
 		//..................................................................
 		//------------------------------------------------------------------Relación de recurrencia
-		float pos_dist[3];//Inicializa arreglo de los posibles valores del score		
+		float pos_dist[3];//Inicializa arreglo de los posibles valores del score
 		//Calcula los posibles puntajes
 		if(STR1[j-1]!=STR2[i-1])//Calcula el valor de un posible apareamiento o reemplazo
 			pos_dist[DIAG]=(VALUE(i-1,j-1) + R);
@@ -400,7 +400,7 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 			pos_dist[DIAG]=(VALUE(i-1, j-1) + MM);
 		pos_dist[VERT]=(VALUE(i-1, j) + I);//Calcula el valor de una posible inserción
 		pos_dist[HORI]=(VALUE(i, j-1) + D);//Calcula el valor de una posible deleción
-		
+
 		//Finalmente, calcula la verdadera distancia y coloca los punteros adecuados
 		VALUE(i,j)=Compare(pos_dist, 3);//Coloca el valor de la distancia en la matriz
 		//Coloca los punteros
@@ -422,7 +422,7 @@ La función Compare() que se pasa como argumento es Min() o Max() dependiendo de
 	}
 #undef STR1
 #undef STR2
-#undef MATRIX 
+#undef MATRIX
 #undef N_POINTERS
 #undef VALUE
 #undef POINTER
@@ -462,10 +462,10 @@ void FillAlignMatrix(A_Matrix *AlignMatrix)
 	}
 	else
 	{
-		printf("\nADVERTENCIA: Función de comparación no es ni min o max \"%s\" al obtener costos, se ha colocado la opción por defecto \"%s\"\n", (AlignMatrix->Type), DEFAULT_TYPE); 
+		printf("\nADVERTENCIA: Función de comparación no es ni min o max \"%s\" al obtener costos, se ha colocado la opción por defecto \"%s\"\n", (AlignMatrix->Type), DEFAULT_TYPE);
 		Compare= (equStr(DEFAULT_TYPE, "min") ? Min : Max);//Si no es min o max, asigna la opción por default.
 	}
-		
+
 	int i,j;
 	//Primero coloca los elementos correspondientes a las condiciones base, i.e, con i=0 o j=0
 	for(i=0; i<rows; i++)//En la primera columna
@@ -505,8 +505,6 @@ void FreeAlignMatrix(A_Matrix *AlignMatrix)
 	free(AlignMatrix->AlignType);
 	free(AlignMatrix);
 }//___________________________________________________________
-
-
 #undef DEFAULT_TYPE
 #undef DEFAULT_ALIGN
 
