@@ -67,11 +67,7 @@ int debug; // Variable global para debugear :P
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 float Min(const float *numbers, const int size)
-/*
-*	Min
-* 	----
-* 	Numbers es un arreglo de size números, Min(numbers, size) devuelve el menor valor
-*/
+// Numbers es un arreglo de size números, Min(numbers, size) devuelve el menor valor.
 {
 	int i;
 	float min;
@@ -111,9 +107,9 @@ void insert(const char c, const int pos, char *s)
  * Sólo funciona con strings alojadas con malloc(), calloc() o strcpy().
  */
 {
-	int i=strlen(s)+1;//El tamaño de s
-	s = (char *) realloc(s, (i+1)*sizeof(char));//Pon espacio en s para un caracter más
-	s[i+1] = '\0';//Pon el caractér final
+	int i=strlen(s)+1; // El tamaño de s
+	s = (char *) realloc(s, (i+1)*sizeof(char)); // Pon espacio en s para un caracter más
+	s[i+1] = '\0'; // Pon el caractér final
 	for(; i > pos; i--)
 		swap(s, i, i-1);//Recorre uno a uno los caracteres hacia la izquierda para insertar el nuevo
 	s[i]=c;//Inserta el nuevo caracter
@@ -151,9 +147,9 @@ float *getNum(const char *str, const int pos)
 			dec*=10;
 			dec+=str[i+j]-'0';
 		}
-		i+=j;//La posición siguiente
 		for(; j>=0; j--)//Recorre el punto decimal
 			dec/=10;
+		i += j; // La posición siguiente
 	}
 
 	num[0]=(sum+dec)*sign;//Coloca el valor numérico con signo
