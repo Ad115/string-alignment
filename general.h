@@ -12,34 +12,34 @@ Las siguientes son las funciones declaradas aquí:
 
 :float Min(const float *numbers, const int size):
 	Encuentra el mínimo de los valores en numbers, de longitud size.
-	
+
 :float Max(const float *numbers, const int size):
 	Encuentra el máximo de los valores en numbers, donde numbers tiene size entradas.
-	
+
 :void swap(char *s, const int a, const int b):
 	Intercambia los valores s[a] y s[b] en la cadena de texto str.
-	
+
 :void insert(const char c, const int pos, char *s):
 	Inserta el caracter c en la cadena de texto str, de tal manera que str[pos]=c, los otros valores se recorren al final de la cadena.
-	
+
 :float *getNum(const char *str, const int pos):
 	Obtiene el valor numérico en la cadena str desde la posición pos, además de la posición del siguiente caracter no numérico.
-	
+
 :char ***getArgs(char **argv, const int argc):
 	De la lista de strings argv con argc cadenas, obtiene las variables declaradas como "--var=val".
-	
+
 :char *getVar(const char *str):
 	str es una declaración de variable de la forma "--variable=valor". Obtiene "variable".
-	
+
 :char *getVal(const char *str):
 	str es una declaración de variable de la forma "--variable=valor". Obtiene "valor".
-	
+
 :int equStr(const char *str1, const char *str2):
 	Verdadero (1) si str1 es igual a str2.
-	
+
 char *dupStr(const char *ref_str):
 	Genera un duplicado de la cadena de referencia ref_str y devuelve un puntero a la copia.
-	
+
 void copyStr(char *copy, const char *ref_str):
 	Copia la cadena de referencia ref_str a copy, caracter por caracter, asume que hay espacio suficiente en copy.
 
@@ -130,19 +130,19 @@ float *getNum(const char *str, const int pos)
 {
 	float *num=(float *) malloc(2 * sizeof(float));//Inicializa el arreglo del resultado
 	int i=pos, sign=1;
-	if(str[i]=='+' || str[i]=='-')//Verifica si el número contiene signo 
+	if(str[i]=='+' || str[i]=='-')//Verifica si el número contiene signo
 	{
 		sign = (str[i]=='+' ? 1 : -1);//Coloca el signo correspondiente
 		i++;
 	}
-	
+
 	double sum=0, dec=0;
 	for(; '0'<=str[i] && str[i]<='9';i++)//Obtén el valor absoluto de la parte entera del número
 	{
 		sum*=10;
 		sum+=str[i]-'0';
 	}
-	
+
 	if(str[i]=='.')//Checa si hay una parte fraccionaria
 	{
 		int j;
@@ -155,7 +155,7 @@ float *getNum(const char *str, const int pos)
 		for(; j>=0; j--)//Recorre el punto decimal
 			dec/=10;
 	}
-	
+
 	num[0]=(sum+dec)*sign;//Coloca el valor numérico con signo
 	num[1]=i;//Coloca el índice de la siguiente posición
 	return num;
@@ -177,7 +177,7 @@ char *getVar(const char *str)
 	}
 	var=(char *)realloc(var, (j+1)*sizeof(char));
 	var[j]='\0';
-	
+
 	return var;
 }//___________________________________________________________
 
@@ -211,11 +211,27 @@ char *getVal(const char *str)
 		free(val);
 		val=NULL;
 	}
-	
+
 	return val;
 }//___________________________________________________________
 
 
+char *searchArg(char *arg_name, char ***args)
+// Busca la variable arg_name entre los las variables contenidas en args.
+// args contiene pares (nombre, valor) de las variables pasadas como argumentos desde terminal.
+// Devuelve el valor de la variable encontrada.
+{
+   int i;
+   for(i=0; args[i] != NULL; i++)
+   {
+	   // Si la variable fué declarada...
+	   if(equStr(args[i][0], arg_name))
+	   {
+		   return args[i][1]; // Regresa su valor (como string)
+	   }
+   }
+   return NULL;
+}//____________________________________________
 
 
  char ***getArgs(char **argv, const int argc)
@@ -244,10 +260,24 @@ char *getVal(const char *str)
 	}
 	args = (char ***)realloc(args, (nargs+1)*sizeof(char **));
 	args[nargs] = NULL;
-	
+
 	return args;
 }//___________________________________________________________
 
+
+void freeArgs(char ***args)
+// Libera el espacio ocupado por el arreglo args.
+// Se asume que args fué declarado con la función getArgs()
+{
+	int i;
+   for(i=0; args[i] != NULL; i++)//Libera el espacio que ya no se necesita
+   {
+	   free(args[i][0]);
+	   free(args[i][1]);
+	   free(args[i]);
+   }
+   free(args);
+}//__________________________________________
 
 
 int equStr(const char *str1, const char *str2)

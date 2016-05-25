@@ -101,39 +101,27 @@ int main(int argc, char *argv[])
 
 	// Obten las secuencias de texto, estas siempre son los dos primeros argumentos.
 	char *string1=argv[1], *string2=argv[2];
-	 // Obten las variables declaradas.
+	 // Obten las variables de la línea de comandos
 	char ***args = getArgs(argv, argc);
-	char *type=NULL; float *scores=NULL; int i;
-	for(i=0; args[i] != NULL; i++)
-	{
-		if(equStr(args[i][0], "type"))
-		{
-			type=dupStr(args[i][1]);
-			assert(type != NULL);
-		}
-		else
-		{
-			if(equStr(args[i][0], "scores"))
-			{
-				scores=getScores(args[i][1]);
-			}
-		}
-	}
-	for(i=0; args[i] != NULL; i++)//Libera el espacio que ya no se necesita
-	{
-		free(args[i][0]);
-		free(args[i][1]);
-		free(args[i]);
-	}
-	free(args);
+
+	// Obtén el tipo de matriz
+	char *type=NULL;
+	type = dupStr(searchArg("type", args));
+	assert(type != NULL);
+
+	// Obtén los scores de alineamiento
+	float *scores=NULL;
+	scores = getScores(searchArg("scores", args));
+	assert(scores != NULL);
+
+	freeArgs(args); // Libera el espacio que no necesitas
+
+	printf("\n\nWussup!! :p\n\n");
 
 	//____________________Operaciones___________________________
-
-
-	//_____________________Resultados____________________________
-
 	GlobalAlignment(string1, string2, type, scores);
 
+	//_____________________Resultados____________________________
 	return 0;
  }
 

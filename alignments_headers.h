@@ -18,18 +18,18 @@ Andrés García García @ Sab 26/Mar/2016. (Proyecto inició 19 Oct '15)
 	Estructuras principales
 	~~~~~~~~~~~~~~~~~~~~~~~
 	Declaración de las estructuras básicas utilizadas en el programa.
-::*/
+*/
 		typedef struct Entry_struct
 		 // Estructura correspondiente a cada entrada de la matriz
 		{
 			float Value;
 			int N_Pointers;
 			char Pointers[3];
-			
+
 		} Entry;
 		//___________________________________________________________
-		
-		
+
+
 		typedef struct A_Matrix_struct
 		// Estructura de la matriz de alineamiento, se compone de ambas secuencias de texto y las entradas de la matriz.
 		{
@@ -39,11 +39,11 @@ Andrés García García @ Sab 26/Mar/2016. (Proyecto inició 19 Oct '15)
 			char *AlignType;
 			float *Scores;
 			Entry **M;
-			
+
 		} A_Matrix;
 		//___________________________________________________________
-		
-		
+
+
 		typedef struct Path_struct
 		// Elemento fundamental de la estructura Traceback
 		{
@@ -53,8 +53,8 @@ Andrés García García @ Sab 26/Mar/2016. (Proyecto inició 19 Oct '15)
 			int **Path;//Arreglo de entradas, cada entrada consiste de tres enteros, que comprenden una posición en la matriz y un puntero
 		} Path;
 		//___________________________________________________________
-		
-		
+
+
 		typedef struct Traceback_struct
 		//Contiene implícitamente cada alineamiento desde una celda de una matriz de alineamiento A_Matrix
 		{
@@ -63,18 +63,18 @@ Andrés García García @ Sab 26/Mar/2016. (Proyecto inició 19 Oct '15)
 			int iPaths;//Número de caminos inicializados
 			int uPaths;//Número de caminos no inicializados
 			Path *Paths;//Arreglo de caminos
-			
+
 		} Traceback;
 		//___________________________________________________________
-		
-		
+
+
 		typedef struct Align_struct
 		//Estructura que contiene un alineamiento explícito de dos textos
 		{
 			float Score;
 			char *Align1;
 			char *Align2;
-			
+
 		} Align;
 		//___________________________________________________________
 
@@ -94,7 +94,9 @@ Andrés García García @ Sab 26/Mar/2016. (Proyecto inició 19 Oct '15)
 		float *getNum(const char *str, const int pos); //Obtiene el valor numérico en la cadena str desde la posición pos, además de la posición del siguiente caracter no numérico.
 		char ***getArgs(char **argv, const int argc); //De la lista de strings argv con argc cadenas, obtiene las variables declaradas como "--var=val".
 		char *getVar(const char *str); //str es una declaración de variable de la forma "--variable=valor". Obtiene "variable".
-		char *getVal(const char *str); //str es una declaración de variable de la forma "--variable=valor". Obtiene "valor". 
+		char *getVal(const char *str); //str es una declaración de variable de la forma "--variable=valor". Obtiene "valor".
+        char *searchArg(char *arg_name, char ***args); // Busca la variable arg_name entre los las variables contenidas en args, devuelve su valor.
+        void freeArgs(char ***args); // Libera el espacio ocupado por el arreglo args, previamente declarado con la función getArgs().
 		int equStr(const char *str1, const char *str2); //Verdadero (1) si str1 es igual a str2.
 		char *dupStr(const char *ref_str); //Genera un duplicado de la cadena de referencia ref_str y devuelve un puntero a la copia
 		void copyStr(char *copy, const char *ref_str); // Copia ref_str a copy, asumiendo que el espacio es suficiente hasta el primer caracter nulo
