@@ -74,7 +74,6 @@ Autor
 */
 
 # include <stdio.h>
-# include <stdlib.h>//Para usar malloc()
 # include <assert.h>//Para verificar errores con la función assert()
 //Incluye las librerías de alineamiento de secuencias
 # include "alignments_headers.h"
@@ -83,7 +82,6 @@ Autor
 # include "traceback.h"
 # include "alignment.h"
 
-int debug; // Para debug :P
 
 //===============>> INICIO DE FUNCIÓN MAIN <<=====================
 

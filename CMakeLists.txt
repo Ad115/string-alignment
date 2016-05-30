@@ -1,0 +1,1 @@
+add_executable(global-align global-align.c)
