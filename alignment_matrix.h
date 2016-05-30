@@ -169,7 +169,7 @@ float *getScores(const char *scoreStr)
 	//Carga los valores en la secuencia otorgada
 	float  *temp;
 	int i;
-	for(i=0; scoreStr[i]!='\0';)//Busca en todo el texto
+	for(i=0; scoreStr[i]!='\0';)//Busca en el texto completo
 	{
 		switch(scoreStr[i])//Mira cuál costo se está definiendo
 		{
