@@ -86,7 +86,7 @@ Las siguientes son las funciones declaradas aquí:
 	Cada camino es un listado de la forma Paths[path]->Path={{n,m,POINTER}, {n1,m1,POINTER}, {...}, ... {0,0,-1}}, cuya longitud es Paths[path]->pSize.
 	Para obtenerlos se recorre la matriz siguiendo los punteros en un algoritmo basado en Depth First Search. 
 	Cada vez que se encuentra una bifurcación se copia el alineamiento en construcción tantas veces como caminos nuevos se hayan encontrado.
-	No se usa una cola, en cambio, debido a que todo camino debe terminar en la entrada (0,0) de la matriz,
+	No se usa una cola, en cambio, debido a que cada camino debe terminar en la entrada (0,0) de la matriz,
 	si el último paso en el camino no es {0, 0, NO_POINTERS}, entonces el camino está inconcluso.
 
 :void FreeTraceback(Traceback *traceback):
@@ -196,7 +196,7 @@ Traceback *TracebackFromMatrixEntry(const A_Matrix *AlignMatrix, const int ii, c
  * Cada camino es un listado de la forma Paths[path]->Path={{n,m,POINTER}, {n1,m1,POINTER}, {...}, ... {0,0,-1}}, cuya longitud es Paths[path]->pSize.
  * Para obtenerlos se recorre la matriz siguiendo los punteros en un algoritmo basado en Depth First Search. 
  * Cada vez que se encuentra una bifurcación se copia el alineamiento en construcción tantas veces como caminos nuevos se hayan encontrado.
- * No se usa una cola, en cambio, debido a que todo camino debe terminar en la entrada (0,0) de la matriz,
+ * No se usa una cola, en cambio, debido a que cada camino debe terminar en la entrada (0,0) de la matriz,
  * si el último paso en el camino no es {0, 0, NO_POINTERS}, entonces el camino está inconcluso.
  */
 

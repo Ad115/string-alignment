@@ -19,6 +19,7 @@ Currently only global align has been succesfully implemented.
     Example output:
   
     ```
+
     ====================
     Alineamiento Global.
     ====================
