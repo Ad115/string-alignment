@@ -85,9 +85,12 @@ Autor
 
 int debug; // Para debug :P
 
+#define DEFAULT_TYPE "max"
+#define DEFAULT_SCORES "M20I-1D-1R-1"
+
 //===============>> INICIO DE FUNCIÓN MAIN <<=====================
 
-int main(int argc, char *argv[])
+void main(int argc, char *argv[])
 {
 
 	//____________________Inicialización___________________________
@@ -96,7 +99,7 @@ int main(int argc, char *argv[])
 		printf("\nPara llamar el programa escriba en la terminal:\n");
 		printf("%s <texto1> <texto2> [--scores='M<#M>R<#R>I<#I>D<#D>'] [--type=(min | max)]\n", argv[0]);
 		printf("Ejemplo: %s vintners writers --scores=M20I-1D-1R-1 --type=max\n\n", argv[0]);
-		return 1;
+		return;
 	}
 
 	// Obten las secuencias de texto, estas siempre son los dos primeros argumentos.
@@ -105,24 +108,35 @@ int main(int argc, char *argv[])
 	char ***args = getArgs(argv, argc);
 
 	// Obtén el tipo de matriz
-	char *type=NULL;
-	type = dupStr(searchArg("type", args));
-	assert(type != NULL);
+	char *type = searchArg("type", args);
+    if (type == NULL) 
+    {
+        printf("No se especificó el tipo de alineamiento, tipo por defecto asignado: \"%s\"\n", DEFAULT_TYPE);
+        type = "max";
+    }
+    else
+    {
+        type = dupStr(type);
+    }
 
 	// Obtén los scores de alineamiento
-	float *scores=NULL;
-	scores = getScores(searchArg("scores", args));
-	assert(scores != NULL);
+    float *scores = NULL;
+    char *scores_str = searchArg("scores", args);
+    if (scores_str == NULL)
+    {
+        printf("No se especificaron los scores de alineamiento, scores por defecto asignados: \"%s\"\n", DEFAULT_SCORES);
+        scores_str = DEFAULT_SCORES;
+    }
+    scores = getScores(scores_str);
+    
 
 	freeArgs(args); // Libera el espacio que no necesitas
-
-	printf("\n\nWussup!! :p\n\n");
 
 	//____________________Operaciones___________________________
 	GlobalAlignment(string1, string2, type, scores);
 
 	//_____________________Resultados____________________________
-	return 0;
+	return;
  }
 
  //===============>> FIN DE FUNCIÓN MAIN <<=====================
